@@ -41,10 +41,10 @@ import bpy_extras
 import blf
 
 from mathutils import Vector
-from bpy import (utils, types, props)
+from bpy import (utils, types)
 from bpy.app import handlers
 from bpy.types import (Operator, Panel, PropertyGroup, SpaceView3D)
-from bpy.props import (StringProperty, BoolProperty, IntProperty)
+from bpy.props import (StringProperty, BoolProperty, IntProperty, PointerProperty)
 
 
 # ==================================
@@ -134,9 +134,6 @@ speedometre = Speedometre()
 class SpeedometreSettings(PropertyGroup):
 
     toKmh : BoolProperty(name="Km/h", description="Swith speed to kilometer per hours", default=False)
-    posX : IntProperty(name="PosX", description="Text position X", default=15)
-    posY : IntProperty(name="PosY", description="Text position Y", default=30)
-    posZ : IntProperty(name="PosY", description="Text position Y", default=0)
     fontPointSize : IntProperty(name="FontSize", description="Font point size", default=20)
 
 class SpeedometreData(PropertyGroup):
@@ -146,7 +143,7 @@ class SpeedometreData(PropertyGroup):
 
 class Speedometre_Start(Operator):
 
-    bl_idname = "wm.sm_start"
+    bl_idname = "speedometre.start"
     bl_label = "Start"
     bl_options = {'REGISTER'}
 
@@ -194,7 +191,7 @@ class Speedometre_Start(Operator):
 
 class Speedometre_Stop(Operator):
 
-    bl_idname = "wm.sm_stop"
+    bl_idname = "speedometre.stop"
     bl_label = "Stop"
     bl_options = {'REGISTER'}
 
@@ -236,9 +233,6 @@ class Speedometre_PT_main(SpeedometrePanel, Panel):
     def draw(self, context):
 
         self.layout.prop(context.scene.Speedometre, "toKmh")
-        self.layout.prop(context.scene.Speedometre, "posX")
-        self.layout.prop(context.scene.Speedometre, "posY")
-        self.layout.prop(context.scene.Speedometre, "posZ")
         self.layout.prop(context.scene.Speedometre, "fontPointSize")
         self.layout.separator()
         self.layout.operator("wm.sm_start")
@@ -250,11 +244,11 @@ class Speedometre_PT_main(SpeedometrePanel, Panel):
 #    Register | Unregister
 # ==================================
 
-CLASSES =  [SpeedometreSettings,
+CLASSES =  (SpeedometreSettings,
             Speedometre_Start,
             Speedometre_Stop,
             SpeedometrePanel,
-            Speedometre_PT_main]
+            Speedometre_PT_main)
 
 def register():
     for cls in CLASSES:
@@ -262,7 +256,7 @@ def register():
             utils.register_class(cls)
         except:
             print(f"{cls.__name__} already registred")
-    types.Scene.Speedometre = props.PointerProperty(type=SpeedometreSettings)
+    types.Scene.Speedometre = PointerProperty(type=SpeedometreSettings)
 
 def unregister():
     for cls in CLASSES:
